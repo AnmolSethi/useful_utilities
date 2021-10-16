@@ -1,7 +1,7 @@
 library useful_utilities;
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 
 part 'extensions/context_extension.dart';
 part 'api/api.service.dart';

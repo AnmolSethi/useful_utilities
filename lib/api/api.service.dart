@@ -16,7 +16,7 @@ class Api {
     required Function(String body) response,
     required Function(Map<String, String> error) catchError,
     String method = 'GET',
-    String? body,
+    Map<String, dynamic>? body,
     String? token,
     Map<String, String> queryParams = const {},
     Map<String, String> extraHeaders = const {},
@@ -46,9 +46,9 @@ class Api {
       final res =
           await _parseResponse(url, method.toUpperCase(), _headers, body);
       if (res.statusCode == 200) {
-        return response(res.body);
+        return response(res.data);
       } else {
-        return catchError({'error': res.body, ..._parseError(res)});
+        return catchError({'error': res.data, ..._parseError(res)});
       }
     } catch (e) {
       e.toString();
@@ -57,16 +57,19 @@ class Api {
   }
 
   Future<Response> _parseResponse(String url, String method,
-      Map<String, String> headers, String? body) async {
+      Map<String, String> headers, Map<String, dynamic>? body) async {
+    final Dio dio = Dio();
+    dio.options.headers = headers;
+
     switch (method) {
       case 'GET':
-        return get(Uri.parse(url), headers: headers);
+        return dio.get(url);
       case 'POST':
-        return post(Uri.parse(url), headers: headers, body: body);
+        return dio.post(url, data: FormData.fromMap(body!));
       case 'PATCH':
-        return patch(Uri.parse(url), headers: headers, body: body);
+        return dio.patch(url, data: FormData.fromMap(body!));
       case 'DELETE':
-        return delete(Uri.parse(url), headers: headers);
+        return dio.delete(url);
       default:
         throw Exception('Invalid method');
     }
@@ -75,8 +78,10 @@ class Api {
   Map<String, String> _parseError(Response res) {
     return {
       'statusCode': res.statusCode.toString(),
-      'method': res.request!.method,
-      'url': res.request!.url.toString(),
+      'method': res.requestOptions.method,
+      'baseUrl': res.requestOptions.baseUrl,
+      'path': res.requestOptions.path,
+      'queryParameters': res.requestOptions.queryParameters.toString(),
     };
   }
 }
