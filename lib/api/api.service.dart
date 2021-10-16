@@ -13,7 +13,7 @@ class Api {
 
   Future callApi(
     String apiPath, {
-    required Function(String body) response,
+    required Function(dynamic body) response,
     required Function(Map<String, String> error) catchError,
     String method = 'GET',
     Map<String, dynamic>? body,
@@ -43,15 +43,15 @@ class Api {
     }
 
     try {
-      final res =
+      final Response res =
           await _parseResponse(url, method.toUpperCase(), _headers, body);
+
       if (res.statusCode == 200) {
         return response(res.data);
       } else {
         return catchError({'error': res.data, ..._parseError(res)});
       }
     } catch (e) {
-      e.toString();
       return catchError({'error': e.toString()});
     }
   }
