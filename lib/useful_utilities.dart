@@ -1,9 +1,18 @@
 library useful_utilities;
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+part 'extensions/context_extension.dart';
+part 'api/api.service.dart';
 
 /// [UsefulUtilities] is a class that contains useful utilities for the app.
-class UsefulUtilities {}
+class UsefulUtilities {
+  /// Extracts the url from the data.
+  String extractUrl(String data) {
+    return data.substring(data.indexOf('https'), data.indexOf('.com') + 4);
+  }
+}
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
@@ -12,10 +21,14 @@ class ListItemsBuilder<T> extends StatelessWidget {
     Key? key,
     required this.itemBuilder,
     required this.snapshot,
+    this.emptyWidget = const Center(child: Text('No items')),
+    this.errorWidget = const Center(child: Text('Something went wrong.')),
   }) : super(key: key);
 
   final ItemWidgetBuilder itemBuilder;
   final AsyncSnapshot<List<T>> snapshot;
+  final Widget emptyWidget;
+  final Widget errorWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +37,10 @@ class ListItemsBuilder<T> extends StatelessWidget {
       if (items.isNotEmpty) {
         return _buildList(items);
       } else {
-        return _buildEmptyList();
+        return emptyWidget;
       }
     } else if (snapshot.hasError) {
-      return _buildError();
+      return errorWidget;
     }
 
     return const Center(child: CircularProgressIndicator());
@@ -38,13 +51,5 @@ class ListItemsBuilder<T> extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) => itemBuilder(context, items[index]),
     );
-  }
-
-  Widget _buildEmptyList() {
-    return Container();
-  }
-
-  Widget _buildError() {
-    return const Center(child: Text('Something went wrong.'));
   }
 }
