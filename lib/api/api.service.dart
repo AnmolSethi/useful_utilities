@@ -3,10 +3,6 @@ part of 'package:useful_utilities/useful_utilities.dart';
 class Api {
   String _baseUrl = "";
 
-  final Map<String, String> _headers = {
-    'Content-Type': 'application/json',
-  };
-
   void setBaseUrl(String baseUrl) {
     _baseUrl = baseUrl;
   }
@@ -19,7 +15,7 @@ class Api {
     Map<String, dynamic>? body,
     String? token,
     Map<String, String> queryParams = const {},
-    Map<String, String> extraHeaders = const {},
+    Map<String, String> headers = const {},
   }) async {
     assert(_baseUrl.isNotEmpty,
         "Base url is not set. Please set is using [setBaseUrl] method");
@@ -37,14 +33,13 @@ class Api {
     }
 
     /// Add headers to the request.
-    _headers.addAll(extraHeaders);
     if (token != null) {
-      _headers.addAll({'Authorization': 'Bearer $token'});
+      headers.addAll({'Authorization': 'Bearer $token'});
     }
 
     try {
       final Response res =
-          await _parseResponse(url, method.toUpperCase(), _headers, body);
+          await _parseResponse(url, method.toUpperCase(), headers, body);
 
       if (res.statusCode == 200) {
         return response(res.data);
@@ -57,9 +52,9 @@ class Api {
   }
 
   Future<Response> _parseResponse(String url, String method,
-      Map<String, String> headers, Map<String, dynamic>? body) async {
+      Map<String, dynamic> headers, Map<String, dynamic>? body) async {
     final Dio dio = Dio();
-    dio.options.headers = headers;
+    dio.options.headers.addAll(headers);
 
     switch (method) {
       case 'GET':
