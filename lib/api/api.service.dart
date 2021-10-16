@@ -54,15 +54,16 @@ class Api {
   Future<Response> _parseResponse(String url, String method,
       Map<String, dynamic> headers, Map<String, dynamic>? body) async {
     final Dio dio = Dio();
-    dio.options.headers.addAll(headers);
+
+    final options = Options(headers: headers);
 
     switch (method) {
       case 'GET':
         return dio.get(url);
       case 'POST':
-        return dio.post(url, data: FormData.fromMap(body!));
+        return dio.post(url, data: FormData.fromMap(body!), options: options);
       case 'PATCH':
-        return dio.patch(url, data: FormData.fromMap(body!));
+        return dio.patch(url, data: FormData.fromMap(body!), options: options);
       case 'DELETE':
         return dio.delete(url);
       default:
