@@ -1,18 +1,18 @@
 part of 'package:useful_utilities/useful_utilities.dart';
 
 class Api {
-  String url = '';
   String? body;
 
   final Map<String, String> headers = {'Content-Type': 'application/json'};
 
-  Future callApi({
+  Future callApi(
+    String url, {
     required Function(String body) response,
     required Function(Map<String, String> error) catchError,
     String method = 'GET',
   }) async {
     try {
-      final res = await _parseResponse(method.toUpperCase());
+      final res = await _parseResponse(url, method.toUpperCase());
       if (res.statusCode == 200) {
         return response(res.body);
       } else {
@@ -24,7 +24,7 @@ class Api {
     }
   }
 
-  Future<Response> _parseResponse(String method) async {
+  Future<Response> _parseResponse(String url, String method) async {
     switch (method) {
       case 'GET':
         return get(Uri.parse(url), headers: headers);
