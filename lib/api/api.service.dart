@@ -19,8 +19,8 @@ class Api {
   }) async {
     assert(_baseUrl.isNotEmpty,
         "Base url is not set. Please set is using [setBaseUrl] method");
-    assert((method == 'POST' || method == 'PATCH') && body != null,
-        'Body is required for POST and PATCH requests');
+    // assert((method == 'POST' || method == 'PATCH') && body != null,
+    //     'Body is required for POST and PATCH requests');
 
     /// Set url for the request. [baseUrl] + [apiPath]
     String url = _baseUrl + apiPath;
