@@ -1,5 +1,7 @@
 library useful_utilities;
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 

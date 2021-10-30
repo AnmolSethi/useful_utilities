@@ -3,19 +3,27 @@ part of 'package:useful_utilities/useful_utilities.dart';
 class Api {
   String _baseUrl = "";
 
+  /// Set the base url for the api
+  /// Call this method after initializing the class
+  ///
+  /// https://example.com/api/
   void setBaseUrl(String baseUrl) {
     _baseUrl = baseUrl;
   }
 
+  /// [apiPath] is the path of the api
+  /// [baseUrl] + [apiPath] = https://example.com/api/apiPath
   Future callApi(
     String apiPath, {
     required Function(dynamic body) response,
     required Function(Map<String, String> error) catchError,
     String method = 'GET',
     Map<String, dynamic>? body,
+    BodyType bodyType = BodyType.json,
     String? token,
     Map<String, String> queryParams = const {},
     Map<String, String> headers = const {},
+    TokenType tokenType = TokenType.bearer,
   }) async {
     assert(_baseUrl.isNotEmpty,
         "Base url is not set. Please set is using [setBaseUrl] method");
@@ -38,8 +46,8 @@ class Api {
     }
 
     try {
-      final Response res =
-          await _parseResponse(url, method.toUpperCase(), headers, body);
+      final Response res = await _parseResponse(
+          url, method.toUpperCase(), headers, body, bodyType);
 
       if (res.statusCode == 200) {
         return response(res.data);
@@ -51,21 +59,30 @@ class Api {
     }
   }
 
-  Future<Response> _parseResponse(String url, String method,
-      Map<String, dynamic> headers, Map<String, dynamic>? body) async {
+  Future<Response> _parseResponse(
+      String url,
+      String method,
+      Map<String, dynamic> headers,
+      Map<String, dynamic>? body,
+      BodyType bodyType) async {
     final Dio dio = Dio();
-
     final options = Options(headers: headers);
+
+    final bodyToSend = (bodyType == BodyType.json)
+        ? json.encode(body)
+        : (bodyType == BodyType.formData)
+            ? FormData.fromMap(body!)
+            : null;
 
     switch (method) {
       case 'GET':
-        return dio.get(url);
+        return await dio.get(url);
       case 'POST':
-        return dio.post(url, data: FormData.fromMap(body!), options: options);
+        return await dio.post(url, data: bodyToSend, options: options);
       case 'PATCH':
-        return dio.patch(url, data: FormData.fromMap(body!), options: options);
+        return await dio.patch(url, data: bodyToSend, options: options);
       case 'DELETE':
-        return dio.delete(url);
+        return await dio.delete(url);
       default:
         throw Exception('Invalid method');
     }
@@ -81,3 +98,7 @@ class Api {
     };
   }
 }
+
+enum TokenType { bearer, basic }
+
+enum BodyType { json, formData }
