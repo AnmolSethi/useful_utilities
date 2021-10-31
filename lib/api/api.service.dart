@@ -74,17 +74,22 @@ class Api {
             ? FormData.fromMap(body!)
             : null;
 
-    switch (method) {
-      case 'GET':
-        return await dio.get(url);
-      case 'POST':
-        return await dio.post(url, data: bodyToSend, options: options);
-      case 'PATCH':
-        return await dio.patch(url, data: bodyToSend, options: options);
-      case 'DELETE':
-        return await dio.delete(url);
-      default:
-        throw Exception('Invalid method');
+    try {
+      switch (method) {
+        case 'GET':
+          return await dio.get(url);
+        case 'POST':
+          return await dio.post(url, data: bodyToSend, options: options);
+        case 'PATCH':
+          return await dio.patch(url, data: bodyToSend, options: options);
+        case 'DELETE':
+          return await dio.delete(url);
+        default:
+          throw Exception('Invalid method');
+      }
+    } catch (e, s) {
+      print('DioError: $e, $s');
+      rethrow;
     }
   }
 
