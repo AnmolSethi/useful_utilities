@@ -1,11 +1,11 @@
 name: useful_utilities
 description: UsefulUtilities is a class that contains useful utilities for the Flutter app
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/AnmolSethi/useful_utilities
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   dio: ^4.0.0
