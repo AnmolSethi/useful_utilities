@@ -2,17 +2,28 @@ part of 'package:useful_utilities/useful_utilities.dart';
 
 class Api {
   String _baseUrl = "";
+  Map<String, String> _headers = {};
 
   /// Set the base url for the api
   /// Call this method after initializing the class
   ///
   /// https://example.com/api/
-  void setBaseUrl(String baseUrl) {
+  void setBaseUrl(final String baseUrl) {
     _baseUrl = baseUrl;
   }
 
+  /// Set the headers for the api
+  /// Call this method after initializing the class
+  /// [headers] is a map of headers
+  void setHeaders(final Map<String, String> headers) {
+    _headers = headers;
+  }
+
   /// [apiPath] is the path of the api
+  ///
   /// [baseUrl] + [apiPath] = https://example.com/api/apiPath
+  ///
+  /// [baseUrl] + [apiPath] + [queryParams] = https://example.com/api/apiPath?queryParams
   Future callApi(
     String apiPath, {
     required Function(dynamic body) response,
@@ -38,6 +49,10 @@ class Api {
       queryParams.forEach((key, value) {
         url += '$key=$value&';
       });
+    }
+
+    if (headers.isEmpty) {
+      headers = _headers;
     }
 
     /// Add headers to the request.
@@ -77,18 +92,18 @@ class Api {
     try {
       switch (method) {
         case 'GET':
-          return await dio.get(url);
+          return await dio.get(url, options: options);
         case 'POST':
           return await dio.post(url, data: bodyToSend, options: options);
         case 'PATCH':
           return await dio.patch(url, data: bodyToSend, options: options);
         case 'DELETE':
-          return await dio.delete(url);
+          return await dio.delete(url, options: options);
         default:
           throw Exception('Invalid method');
       }
-    } catch (e, s) {
-      print('DioError: $e, $s');
+    } catch (e) {
+      debugPrint('DioError: $e');
       rethrow;
     }
   }

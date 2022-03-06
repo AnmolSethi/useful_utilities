@@ -18,8 +18,8 @@ class UsefulUtilities {
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
-class ListItemsBuilder<T> extends StatelessWidget {
-  const ListItemsBuilder({
+class FutureListItemsBuilder<T> extends StatelessWidget {
+  const FutureListItemsBuilder({
     Key? key,
     required this.itemBuilder,
     required this.snapshot,
